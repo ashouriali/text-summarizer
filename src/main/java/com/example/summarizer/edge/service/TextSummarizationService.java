@@ -7,6 +7,8 @@ import com.example.summarizer.edge.repository.TextSummarizationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,16 +21,20 @@ public class TextSummarizationService {
     private final TextSummarizerAgent textSummarizerAgent;
 
     public TextSummarizationDto summarizeText(TextSummarizationDto textSummarizationDto) {
-        AssistantMessage message = textSummarizerAgent.replyToPrompt(List.of(new UserMessage(textSummarizationDto.getOriginalText())));
+        AssistantMessage message = textSummarizerAgent.replyToPrompt(List.of(new UserMessage(textSummarizationDto.getText())));
         TextSummarizationEntity textSummarizationEntity = TextSummarizationEntity.builder()
-                .originalText(textSummarizationDto.getOriginalText())
+                .originalText(textSummarizationDto.getText())
                 .summarizedText(message.getText())
                 .build();
         return textSummarizationRepository.save(textSummarizationEntity).toDto();
     }
 
-    public List<TextSummarizationDto> getAllTextSummarizations() {
-        return textSummarizationRepository.findAll().stream().map(TextSummarizationEntity::toDto).collect(Collectors.toList());
+    public List<TextSummarizationDto> getAllTextSummarizations(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return textSummarizationRepository.findAll(pageable)
+                .stream()
+                .map(TextSummarizationEntity::toDto)
+                .collect(Collectors.toList());
     }
 
 }

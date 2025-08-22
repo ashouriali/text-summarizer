@@ -10,6 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestControllerAdvice
@@ -27,8 +28,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
+        Optional<Throwable> throwable = Optional.ofNullable(ex.getCause());
         Map<String, Object> errorResponse = createErrorResponse(
-                ex.getCause().getMessage(),
+                throwable.orElse(new GeneralException(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR)).getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ex.getMessage()
         );
@@ -39,8 +41,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(GeneralException.class)
     public ResponseEntity<Object> handleGeneralExceptions(GeneralException ex, WebRequest request) {
+        Optional<Throwable> throwable = Optional.ofNullable(ex.getCause());
         Map<String, Object> errorResponse = createErrorResponse(
-                ex.getCause().getMessage(),
+                throwable.orElse(new GeneralException(ex.getMessage(), ex.getStatus())).getMessage(),
                 ex.getStatus(),
                 ex.getMessage()
         );

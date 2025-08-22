@@ -20,6 +20,6 @@ public class TextSummarizationEntity {
     private String summarizedText;
 
     public TextSummarizationDto toDto() {
-        return TextSummarizationDto.builder().id(id).originalText(originalText).summarizedText(summarizedText).build();
+        return TextSummarizationDto.builder().id(id).text(originalText).summary(summarizedText).build();
     }
 }

@@ -32,7 +32,7 @@ public abstract class Agent {
         return formatResponse(rawResponse);
     }
 
-    private AssistantMessage formatResponse(CallResponseSpec responseSpec) {
+    protected AssistantMessage formatResponse(CallResponseSpec responseSpec) {
         return Objects.requireNonNull(responseSpec.chatResponse()).getResult().getOutput();
     }
 
